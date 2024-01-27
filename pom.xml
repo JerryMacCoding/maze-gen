@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <groupId>io.github.ace-lectures.2aa4</groupId>
-  <artifactId>mazegen</artifactId>
+  <artifactId>jingz2</artifactId>
   <version>1.0</version>
   <name>McSCert :: 2AA4 :: Maze Generator</name>
 
