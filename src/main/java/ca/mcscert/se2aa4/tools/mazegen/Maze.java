@@ -1,7 +1,9 @@
 package ca.mcscert.se2aa4.tools.mazegen;
 
 import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,10 +15,64 @@ public class Maze {
     private static final Logger logger = LogManager.getLogger();
 
     private final Tile[][] theGrid;
+    private Location startPoint;
+    private Location endPoint;
 
     public Maze(int width, int height) {
         this.theGrid = new Tile[height][width];
         fillWithWalls();
+        /*MazeCarver carver = new MazeCarver();
+        carver.carve(this, new Random());*/
+    }
+
+    public void generate(Random random) {
+        carve(random);
+        initializeStartAndEndPoints();
+    }
+
+    private void initializeStartAndEndPoints() {
+        this.startPoint = findStartPoint();
+        this.endPoint = findEndPoint();
+        if (startPoint == null || endPoint == null) {
+            throw new IllegalStateException("Failed to create valid start or end points.");
+        }
+    }
+
+    public Location findStartPoint() {
+        for (int x = 0; x < getWidth(); x++) {
+            if (tileAt(x, 0) == Tile.EMPTY) {
+                return new Location(x, 0);
+            }
+        }
+        return null;
+    }
+
+    public Location findEndPoint() {
+        
+        for (int x = 0; x < getWidth(); x++) {
+            if (tileAt(x, getHeight() - 1) == Tile.EMPTY) {
+                return new Location(x, getHeight() - 1);
+            }
+        }
+        return null; 
+    }
+
+    public static Maze load(BufferedReader reader) throws IOException {
+        List<String> lines = reader.lines().collect(Collectors.toList());
+        int height = lines.size();
+        int width = lines.get(0).length();
+        Maze maze = new Maze(width, height);
+
+        for (int y = 0; y < height; y++) {
+            String line = lines.get(y);
+            for (int x = 0; x < line.length(); x++) {
+                char ch = line.charAt(x);
+                maze.theGrid[y][x] = (ch == '#') ? Tile.WALL : Tile.EMPTY;
+            }
+        }
+
+        maze.initializeStartAndEndPoints();
+        return maze;
     }
 
     public int getWidth() { return this.theGrid[0].length; }
@@ -66,4 +122,5 @@ public class Maze {
         }
     }
 
+    
 }
